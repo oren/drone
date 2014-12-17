@@ -1,0 +1,30 @@
+---
+- hosts: web-servers
+  gather_facts: no
+  vars:
+    user: deploy
+    password: $6$/sss9Fjfo6$OK5Hb/3CY5l3VIaL.YkclnivX7f7TdHHmmGm88/lDcmo1kHFx92snQCMstX/KT.VmRh5iSFq3rnkESn6zkhM90
+
+  tasks:
+  - name: install debian packages
+    apt: pkg={{ item }} state=present update_cache=yes
+    with_items:
+    - vim
+    - tmux
+    - htop
+    - mosh
+    - git-core
+    - tree
+    - weechat
+    - silversearcher-ag
+    - newsbeuter
+    - nodejs
+    - postgresql-client
+    tags: packages
+
+  - name: create deploy group
+    group: name=deploy state=present
+
+  - name: create deploy user
+    user: name={{user}} state=present home=/home/{{user}} group={{user}} groups="sudo" password={{ password }} shell=/bin/bash
+    tags: user
